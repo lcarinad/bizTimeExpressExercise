@@ -7,6 +7,7 @@ CREATE TABLE companies (
     code text PRIMARY KEY,
     name text NOT NULL UNIQUE,
     description text
+    
 );
 
 CREATE TABLE invoices (
