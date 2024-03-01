@@ -28,20 +28,6 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// router.post("/", async (req, res, next) => {
-//   try {
-//     const { comp_code, amt } = req.body;
-//     console.log(comp_code, amt);
-//     const results = await db.query(
-//       "INSERT INTO invoices(comp_code, amt) VALUES($1, $2) RETURNING *",
-//       [comp_code, amt]
-//     );
-//     console.log("Inserted invoice:", results.rows[0]);
-//     return res.status(201).json({ invoice: results.rows[0] });
-//   } catch (e) {
-//     return next(e);
-//   }
-// });
 router.post("/", async function (req, res, next) {
   try {
     let { comp_code, amt } = req.body;
