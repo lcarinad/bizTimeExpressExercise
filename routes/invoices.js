@@ -2,7 +2,7 @@ const express = require("express");
 const ExpressError = require("../expressError");
 const router = express.Router();
 const db = require("../db");
-
+const currentDate = new Date();
 router.get("/", async (req, res, next) => {
   try {
     const results = await db.query(`SELECT * FROM invoices`);
@@ -47,12 +47,32 @@ router.post("/", async function (req, res, next) {
 
 router.put("/:id", async (req, res, next) => {
   try {
+    let results;
     const { id } = req.params;
     const { amt } = req.body;
-    const results = await db.query(
-      `UPDATE invoices SET amt=$1 WHERE id=$2 RETURNING *`,
-      [amt, id]
-    );
+    if (req.body.paid === true) {
+      console.log("The invoice is being paid!", req.body);
+      results = await db.query(
+        `UPDATE invoices SET amt=$1, paid=$2, paid_date=$3 WHERE id = $4 RETURNING *`,
+        [amt, true, currentDate, id]
+      );
+    } else if (req.body.paid === false) {
+      console.log("The invoice is being UNpaid!", req.body);
+      results = await db.query(
+        `UPDATE invoices 
+        SET amt=$1, paid=$2, paid_date=$3 
+        WHERE id=$4 RETURNING *`,
+        [amt, false, null, id]
+      );
+    } else {
+      console.log("PAID STATUS IS NOT CHANGING", req.body);
+      results = await db.query(
+        `UPDATE invoices
+  SET amt=$1 WHERE id=$2
+  RETURNING *`,
+        [amt, id]
+      );
+    }
     if (results.rows.length === 0) {
       throw new ExpressError(
         `Can't update invoice with id number of ${id}}`,
